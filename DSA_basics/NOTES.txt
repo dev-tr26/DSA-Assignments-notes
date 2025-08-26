@@ -1,0 +1,4 @@
+queue and stack all ops o(1) trunc
+priority queue all ops o(log n)   == push/pop o(log n)  === top o(1)
+set erase takes o(log n) directly if done using iterator then o(1)
+in set everything in o(log n) insert delete
