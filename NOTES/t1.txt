@@ -1,0 +1,266 @@
+
+
+
+
+sql and other rdbms sql server,oracle,postgres are rdbms stores data in form of tables
+
+= inside it there is b-tree (balanced trees) used to store data
+= its property is more than one index ,keys in one node height is less so less storage in disks
+= log n ops in insert,read,update
+= faster search 
+
+= also hash tables used which has a hasing function that maps keys to its location for faster searching
+
+datatypes of sql
+
+char,varchar,int,float,double,boolean
+char = fixed len 
+varchar = variable len memory takes
+eg char(50), varchar(50) varchar takes only necessary jagah
+-------------------------------------------
+INSERT INTO table_name
+(col_1,col_2)
+VALUES
+(101, 'karan),
+(102, 'jpnamda'),
+
+line wise and order wise add data 
+-------------------------------------------
+
+CREATE DATABASE student;
+USE student;
+
+CREATE TABLE employee(
+    ID INT PRIMARY KEY,
+    name VARCHAR(50),
+    salary INT
+);
+
+INSERT INTO employee
+(id,name,salary)
+VALUES
+(1,"TR",2342),
+(2,"JP",3243),
+(3, "RE",24322);
+----------------------------------------------------
+
+CONSTRAINTS :
+
+col_1 int NOT NULL
+col_2 int UNIQUE
+pk can be defined for any one of the col per table_name
+
+PRIMARY KEY (id,name) => here id and name can be same but its combo should be unique 
+
+
+CREATE TABLE temp(
+    cust_id INT,
+    salary INT DEFAULT 30000,
+    FOREIGN KEY (cust_id) REFRENCES customer(id)
+);
+
+## CHECK 
+
+CREATE TABLE city(
+    id INT PRIMARY KEY,
+    city VARCHAR(50),
+    age INT,
+    CONSTRAINT age_check CHECK (age>=18 AND city="Delhi)
+);
+-----------------------------------------------------------------------------------------
+
+## OPERATORS
+AND,OR,BETWEEN, IN, NOT IN 
+
+SELECT * FROM student WHERE city IN ('Delhi', 'Mumbai');
+SELECT * FROM student WHERE marks BETWEEN 80 AND 90;
+SELECT * FROM student WHERE city NOT IN ('Delhi', 'Mumbai');
+SELECT * FROM student LIMIT 3;  (no of tuples)
+
+SELECT * FROM student 
+ORDER BY city ASC;
+
+by default its asc order
+
+SELECT marks FROM student
+ORDER BY marks DESC
+LIMIT 5;
+
+
+--------------------------------------------------
+
+## AGGREGATE FUN 
+
+COUNT(), MAX(), MIN(), SUM(), AVG()
+
+SELECT city, COUNT(name)
+FROM student
+GROUP BY city;
+
+we cannot select cols which basis we have not group by EX
+EX. SELECT city,name, COUNT(roll_num)
+FROM student
+GROUP BY city;
+
+this is wrong it will give error
+
+---------------------------------------------------------------
+
+HAVING clause used for conditions on groups 
+WHERE conditions on cols it cannot be used on groups
+
+SELECT city, COUNT(roll_num)
+FROM student
+GROUP BY city
+HAVING MAX(marks) > 90;
+
+
+SELECT     cols 
+FROM       table_name 
+WHERE      condition
+GROUP BY   cols
+HAVING     condition
+OPDER BY   cols 
+
+------------------------------------------------------
+
+UPDATE table_name
+SET col_1= val1, col_2 = val2
+WHERE condition 
+
+first off safe mode
+SET SQL_SAFE_UPDATES = 0;
+
+DELETE FROM table_name
+WHERE marks < 33;
+
+DELETE FROM student;
+
+------------------------------------------ 
+CASCADINDING FK 
+cascade = ek jagya a change thyo to biji jagya a dekhavo joiye
+
+CREATE TABLE student(
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
+    FOREIGN KEY(course_id) REFRENCES course(id)
+    ON DELETE CASCADE,
+    ON UPDATE CASCADE
+);
+-------------------------------------------------
+
+ALTER (to change the schema)
+
+# ADD column
+
+ALTER TABLE table_name
+ADD COLUMN col_name dataType CONSTRAINT;
+
+# DROP column
+
+ALTER TABLE table_name                  ALTER TABLE student
+DROP COLUMN col_name;                   ADD COLUMN age INT NOT NULL DEFAULT 19;
+
+# RENAME table 
+
+ALTER TABLE table_name                   ALTER TABLE student
+RENAME TO new_name;                      RENAME TO stu;
+
+
+# CHANGE COLUMN
+
+ALTER TABLE table_name                                           ALTER TABLE student
+CHANGE COLUMN old_name new_name new_datatype new_constraint;     CHANGE age stu_age INT;
+
+# MODIFY 
+
+ALTER TABLE table_name                                  ALTER TABLE student 
+MODIFY col_name< new_datatype new_constraint;           MODIFY age VARCHAR(2);
+--------------------------------------------------------------------------------------
+
+TRUNCATE table_name ( deletes table data)
+DROP table_name (deltes table)
+
+---------------------------------------------------------------------------------------
+JOINS (used to combine rows from two or more tables based on a related col between them...)
+
+inner join or self join 
+return matching values data
+
+SELECT *
+FROM student AS s 
+INNER JOIN course AS c 
+ON s.student_id = c.student_id;
+
+
+#LEFT JOIN AMA J TABLE NO DATA AKHO JOIYE CHE E PELA AVSE 
+# RIGHT JOIN SIMILARLY CAN DO 
+SELECT col
+FROM table_name
+LEFTJOIN tableB
+ON tableA.col_name = tableB.col_name; 
+
+
+# FULL JOIN returns all records when there is a match in either left or right table 
+
+# NO FULL JOIN CMD IN MYSQL SO WE USE UNION CMD TO PERFORM FULL JOIN 
+
+SELECT * FROM student AS add
+LEFT JOIN course AS balanced
+ON a.id = b.ID
+UNION
+SELECT * FROM student AS a
+RIGHT JOIN course AS b
+ON a.id= b.id; 
+
+-----------------------------------------------------------------------------------------------
+
+EXCLUSIVE JOIN A-B OR B-A 
+
+SELECT *
+FROM student AS a 
+LEFT JOIN course AS b 
+ON a.id= b.id
+WHERE b.id IS NULL;
+-------------------------------------------------------------------------------------
+
+SELF JOIN it is same as regular join with itself
+eg. manager of manager to find 
+
+SELECT a.name AS manager_name, b.name
+FROM employee AS a 
+join employee AS b 
+ON a.id = b.manager_id;
+
+----------------------------------------------------------------------
+UNION it is used to combine reseult set of two or more select statements 
+gives unique records 
+
+to use it 
+every select should have same no of cols
+every col must have similar data types
+cols in every select should be in same order 
+
+
+SELECT cols FROM tableA 
+UNION                            # UNION ALL gives all with duplicates 
+SELECT cols FROM tableB
+
+-----------------------------------------------------------
+
+SELECT marks, name
+FROM student 
+WHERE marks > ( SELECT AVG(marks) FROM student);
+
+SELECT name, roll_num 
+FROM student
+WHERE  roll_num IN (SELECT roll_num FROM student WHERE roll_num %2 = 0 )
+
+--------------------------------------------------------------------------
+
+views are virtual tales based on result set of an sql statement 
+
+CREATE VIEW view1 AS 
+SELECT roll_num, name FROM student;
+
+SELECT * FROM view1 ; 
