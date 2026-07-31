@@ -10,6 +10,7 @@ int main()
         int a,b,x;
         cin >> a,b,x;
         
+        int ans = min(diff1, diff2);
         cout << ans << endl;
     }
     return 0;
