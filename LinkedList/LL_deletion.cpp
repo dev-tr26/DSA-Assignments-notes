@@ -66,7 +66,7 @@ Node *removeNode(Node *head, int k)
     {
         Node *temp = head;
         head = head->next;
-        free(temp);
+        delete temp;
         return head;
     }
     int count = 0;
@@ -78,7 +78,7 @@ Node *removeNode(Node *head, int k)
         if (count == k)
         {
             prev->next = curr->next;
-            free(curr);
+            delete curr;
             break;
         }
         prev = curr;
@@ -123,23 +123,23 @@ Node *deleteFirstNode(Node *head)
 // delete last node
 
 Node *deleteLastNode(Node *head)
-{
-    if (head != NULL)
-    {
-        if (head == NULL)
-        {
-            return NULL;
-        }
-        Node *curr = head;
-        Node *prev = NULL;
-        while (curr->next != NULL)
-        {
-            prev = curr;
-            curr = curr->next;
-        }
-        delete curr;
-        prev->next = NULL;
+{   
+    if(head==NULL)return NULL;
+
+    if(head->next = NULL){
+        delete head;
+        return NULL;
     }
+
+    Node*curr = head; 
+    Node*prev = NULL;
+
+    while(curr->next!=NULL){
+        prev =curr;
+        curr= curr->next;
+    }
+    prev->next = NULL;
+    delete curr;
     return head;
 }
 
@@ -152,18 +152,41 @@ Node *insertNode(Node *head)
 
 Node *insertlastnode(Node *head)
 {
-    Node *tail, *temp;
-    temp = tail = NULL;  
-    if (temp == NULL)
-    {
-        temp = new Node(9);
-        tail = temp;
+    Node *newNode = new Node(9);
+
+    if(head == NULL)return newNode;
+    
+    Node*temp = head;
+    while(temp->next !=NULL){
+        temp = temp->next;
     }
-    else
-    {
-        tail->next=new Node(9);
-        tail=tail->next;
-    }return tail;
+
+    temp->next = newNode;
+    return head;
+}
+
+
+// delete by value in ll
+Node *insertBeforeValue(Node*head, int element,int value){
+    if(head == NULL)return NULL;
+
+    if(head->data == value){
+        Node* x = new Node(element);
+        x->next =head;
+        return x;
+    }
+
+    Node*temp = head;
+    while(temp->next!=NULL){
+        if(temp->next->data == value){
+            Node * x = new Node(element);
+            x->next = temp->next;
+            temp->next =x;
+            break;
+        }
+        temp = temp->next;
+    }
+    return head;
 }
 
 // print
@@ -199,8 +222,8 @@ int main()
     // head=removeNode(head,c);
 
     head = insertNode(head);
+    head = insertBeforeValue(head,100,6);
     head= insertlastnode(head);
-
     printll(head);
 
     return 0;
